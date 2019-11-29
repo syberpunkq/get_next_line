@@ -1,18 +1,21 @@
 #include "get_next_line.h"
+#include "libft/ft_strchr.c"
+#include "libft/ft_strjoin.c"
 
 int get_next_line(const int fd, char **line)
 {
 	int res;
-	int last;
+	int eof;
 	int line_end;
 	char *buff;
 	char *ptr;
 	static char *temp;
 
 	line_end = 0;
+    eof = 0;
 
 	*line = malloc(sizeof(char) * 1);
-	buff = malloc(sizeof(char) * BUF_SIZE + 1);
+	buff = malloc(sizeof(char) * BUFF_SIZE + 1);
 	if (temp)
 	{
 		// last = ft_strlen(temp);
@@ -30,8 +33,11 @@ int get_next_line(const int fd, char **line)
 	}
 	while (!line_end)
 	{
-		if ((res = read(fd, buff, BUF_SIZE)) == 0)
-			break;
+		if ((res = read(fd, buff, BUFF_SIZE)) == 0)
+        {
+			eof = 1;
+            break;
+        }
 		buff[res] = 0;
 		if((ptr = ft_strchr(buff, '\n')))
 			{
@@ -41,5 +47,8 @@ int get_next_line(const int fd, char **line)
 			}
 		*line = ft_strjoin(*line, buff);
 	}
-	return(1);
+    if (eof)
+        return (0);
+    else
+	    return(1);
 }
