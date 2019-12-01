@@ -1,8 +1,4 @@
 #include "get_next_line.h"
-#include "libft/ft_strchr.c"
-#include "libft/ft_strjoin.c"
-#include "libft/ft_strcmp.c"
-#include "libft/ft_strnew.c"
 
 int get_next_line(const int fd, char **line)
 {
@@ -35,6 +31,7 @@ int get_next_line(const int fd, char **line)
 			foo = ft_strdup(ptr + 1);
 			free(temp);
 			temp = foo;
+			foo = NULL;
 			line_end = 1;
 		}
 		else
@@ -42,8 +39,8 @@ int get_next_line(const int fd, char **line)
 			foo = ft_strjoin(*line, temp);
 			free(*line);
 			*line = foo;
-			free(temp);
-			temp = NULL;
+			foo = NULL;
+			ft_memdel((void **) &temp);
 		}
 	}
 	while (!line_end)
@@ -51,7 +48,10 @@ int get_next_line(const int fd, char **line)
 		if ((res = read(fd, buff, BUFF_SIZE)) == 0)
         {
 			if(ft_strcmp(*line, "") == 0)
+			{
+				ft_memdel((void **) line);
 				eof = 1;
+			}
             break;
         }
 		buff[res] = 0;
@@ -59,17 +59,22 @@ int get_next_line(const int fd, char **line)
 		{
 			*ptr = 0;
 			foo = ft_strdup(ptr + 1);
-			free(temp);
+			ft_memdel((void **) &temp);
 			temp = foo;
+			foo = NULL;
 			line_end = 1;
 		}
 		foo = ft_strjoin(*line, buff);
-		free(*line);
+		ft_memdel((void **) line);
 		*line = foo;
+		foo = NULL;
 	}
-	free(buff);
+	ft_memdel((void **) &buff);
     if (eof)
+	{
+		ft_memdel((void **) &temp);
         return (0);
+	}
     else
 	    return(1);
 }
