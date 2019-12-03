@@ -1,120 +1,122 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mzapdos <mzapdos@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/12/02 22:10:50 by mzapdos           #+#    #+#             */
+/*   Updated: 2019/12/03 02:52:11 by mzapdos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
-t_list *ft_lstfind(t_list **l_list, int fd)
+t_list	*ft_lstfind(t_list **l_list, int fd)
 {
-	t_list *new_node;
-	fd_buff *buff_elem;
-	while(*l_list)
+	t_list	*list_elem;
+	t_buff	*buff_elem;
+
+	list_elem = *l_list;
+	while (list_elem)
 	{
-		if((buff_elem = (*l_list)->content) && (buff_elem->fd == fd))
-			return(*l_list);
-		*l_list = (*l_list)->next;
+		if ((buff_elem = (list_elem)->content) && (buff_elem->fd == fd))
+			return (list_elem);
+		list_elem = (list_elem)->next;
 	}
-	buff_elem = (fd_buff*)malloc(sizeof(fd_buff));
+	buff_elem = (t_buff*)malloc(sizeof(t_buff));
 	buff_elem->fd = fd;
 	buff_elem->text = ft_strnew(0);
-	new_node = ft_lstnew(buff_elem, sizeof(fd_buff));
+	list_elem = ft_lstnew(buff_elem, sizeof(t_buff));
 	if (*l_list == NULL)
 	{
-		new_node->next = NULL;
-		*l_list = new_node;
+		list_elem->next = NULL;
+		*l_list = list_elem;
 	}
 	else
-		ft_lstadd(l_list, new_node);
-	return(new_node);
+		ft_lstadd(l_list, list_elem);
+	return (list_elem);
 }
-int read_from_l_list(t_list *l_list, char **line)
+
+int		read_from_l_list(t_buff *buff_elem, char **line)
 {
-	int line_end;
-	fd_buff *buff_elem;
-	char *ptr;
-	char *foo;
+	char	*ptr;
+	char	*tmp;
+	int		line_end;
 
 	line_end = 0;
-	buff_elem = l_list->content;
-	if ((ft_strlen(buff_elem->text)) != 0)
+	if (buff_elem->text && (ft_strlen(buff_elem->text)) != 0)
 	{
-		if((ptr = ft_strchr(buff_elem->text, '\n')))
+		if ((ptr = ft_strchr(buff_elem->text, '\n')))
 		{
 			*ptr = 0;
-			foo = ft_strjoin(*line, buff_elem->text);
-			free(*line);
-			*line = foo;
-			foo = ft_strdup(ptr + 1);
-			free(buff_elem->text);
-			buff_elem->text = foo;
-			foo = NULL;
+			ptr = ft_strdup(ptr + 1);
 			line_end = 1;
 		}
 		else
-		{
-			foo = ft_strjoin(*line, buff_elem->text);
-			free(*line);
-			*line = foo;
-			foo = NULL;
-			ft_memdel((void **) &(buff_elem->text));
-			buff_elem->text = ft_strnew(0);
-		}
+			ptr = ft_strnew(0);
+		tmp = ft_strjoin(*line, buff_elem->text);
+		free(*line);
+		*line = tmp;
+		ft_memdel((void **)&(buff_elem->text));
+		buff_elem->text = ptr;
 	}
 	return (line_end);
 }
 
-int get_next_line(const int fd, char **line)
+int		read_from_file(char *buff, char **line,
+						t_buff *buff_elem, int line_end)
 {
-	int res;
-	int eof;
-	int line_end;
-	char *buff;
-	char *ptr;
-	char *foo;
-	// static char *temp;
-	static t_list *l_list;
-	fd_buff *buff_elem;
-	t_list *node;
+	char	*ptr;
+	int		eof;
+	int		res;
+
+	eof = 0;
+	while (!line_end)
+	{
+		if ((res = read(buff_elem->fd, buff, BUFF_SIZE)) == 0)
+			break ;
+		buff[res] = 0;
+		if ((ptr = ft_strchr(buff, '\n')))
+		{
+			*ptr = 0;
+			ptr = ft_strdup(ptr + 1);
+			ft_memdel((void **)&(buff_elem->text));
+			buff_elem->text = ptr;
+			ptr = NULL;
+			line_end = 1;
+		}
+		ptr = ft_strjoin(*line, buff);
+		ft_memdel((void **)line);
+		*line = ptr;
+		ptr = NULL;
+	}
+	return (line_end);
+}
+
+int		get_next_line(const int fd, char **line)
+{
+	int				line_end;
+	char			*buff;
+	static t_list	*l_list;
+	t_buff			*buff_elem;
+	t_list			*node;
 
 	line_end = 0;
-    eof = 0;
 	buff = malloc(sizeof(char) * BUFF_SIZE + 1);
-
 	if (fd < 0 || line == NULL || read(fd, buff, 0) < 0)
 		return (-1);
 	*line = ft_strnew(0);
 	node = ft_lstfind(&l_list, fd);
 	buff_elem = node->content;
-	line_end = read_from_l_list(node, line);
-
-	while (!line_end)
+	line_end = read_from_l_list(buff_elem, line);
+	line_end = read_from_file(buff, line, buff_elem, line_end);
+	ft_memdel((void **)&buff);
+	if (line_end == 0 && ft_strlen(*line) == 0)
 	{
-		if ((res = read(fd, buff, BUFF_SIZE)) == 0)
-        {
-			if(ft_strcmp(*line, "") == 0)
-			{
-				ft_memdel((void **) line);
-				eof = 1;
-			}
-            break;
-        }
-		buff[res] = 0;
-		if((ptr = ft_strchr(buff, '\n')))
-		{
-			*ptr = 0;
-			foo = ft_strdup(ptr + 1);
-			ft_memdel((void **) &(buff_elem->text));
-			buff_elem->text = foo;
-			foo = NULL;
-			line_end = 1;
-		}
-		foo = ft_strjoin(*line, buff);
-		ft_memdel((void **) line);
-		*line = foo;
-		foo = NULL;
+		ft_memdel((void **)line);
+		ft_memdel((void **)&(buff_elem->text));
+		return (0);
 	}
-	ft_memdel((void **) &buff);
-    if (eof)
-	{
-		ft_memdel((void **) &(buff_elem->text));
-        return (0);
-	}
-    else
-	    return(1);
+	return (1);
 }

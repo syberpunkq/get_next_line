@@ -1,12 +1,26 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mzapdos <mzapdos@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/12/02 22:49:48 by mzapdos           #+#    #+#             */
+/*   Updated: 2019/12/03 02:36:34 by mzapdos          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 # include "libft/libft.h"
-int get_next_line(const int fd, char **line);
-typedef struct {
-  int fd;
-  char *text;
-} fd_buff;
-# define BUFF_SIZE 10
+# define BUFF_SIZE 1000
+
+typedef struct
+{
+	int		fd;
+	char	*text;
+}			t_buff;
+
+int			get_next_line(const int fd, char **line);
 
 #endif
-
