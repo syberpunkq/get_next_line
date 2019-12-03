@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mzapdos <mzapdos@student.42.fr>            +#+  +:+       +#+        */
+/*   By: syberpunkq <syberpunkq@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/02 22:10:50 by mzapdos           #+#    #+#             */
-/*   Updated: 2019/12/03 02:52:11 by mzapdos          ###   ########.fr       */
+/*   Updated: 2019/12/03 14:48:30 by syberpunkq       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@ t_list	*ft_lstfind(t_list **l_list, int fd)
 	buff_elem->fd = fd;
 	buff_elem->text = ft_strnew(0);
 	list_elem = ft_lstnew(buff_elem, sizeof(t_buff));
+	free(buff_elem);
 	if (*l_list == NULL)
 	{
 		list_elem->next = NULL;
