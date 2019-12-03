@@ -6,14 +6,14 @@
 /*   By: mzapdos <mzapdos@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/02 22:49:48 by mzapdos           #+#    #+#             */
-/*   Updated: 2019/12/03 02:36:34 by mzapdos          ###   ########.fr       */
+/*   Updated: 2019/12/03 22:27:29 by mzapdos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H
 # include "libft/libft.h"
-# define BUFF_SIZE 1000
+# define BUFF_SIZE 10000
 
 typedef struct
 {

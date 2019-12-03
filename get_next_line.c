@@ -6,7 +6,7 @@
 /*   By: syberpunkq <syberpunkq@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/12/02 22:10:50 by mzapdos           #+#    #+#             */
-/*   Updated: 2019/12/03 14:48:30 by syberpunkq       ###   ########.fr       */
+/*   Updated: 2019/12/03 22:19:46 by mzapdos          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,10 +69,8 @@ int		read_from_file(char *buff, char **line,
 						t_buff *buff_elem, int line_end)
 {
 	char	*ptr;
-	int		eof;
 	int		res;
 
-	eof = 0;
 	while (!line_end)
 	{
 		if ((res = read(buff_elem->fd, buff, BUFF_SIZE)) == 0)
